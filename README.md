@@ -202,7 +202,7 @@ Here are some examples of how you can use this module in your inventory structur
 
 | Name | Description |
 |------|-------------|
-| local\_network\_gw\_connection\_id | n/a |
+| local\_network\_gw\_connection\_id | The ID of the Virtual Network Gateway Connection. |
 | local\_network\_gw\_id | The ID of the Local Network Gateway. |
 | vpn\_gw\_id | The ID of the Virtual Network Gateway. |
 | vpn\_gw\_id\_certificate | The ID of the Virtual Network Gateway. |

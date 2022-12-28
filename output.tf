@@ -13,5 +13,6 @@ output "local_network_gw_id" {
   description = "The ID of the Local Network Gateway."
 }
 output "local_network_gw_connection_id" {
-  value = join("", azurerm_virtual_network_gateway_connection.az-hub-onprem.*.id)
+  value       = join("", azurerm_virtual_network_gateway_connection.az-hub-onprem.*.id)
+  description = "The ID of the Virtual Network Gateway Connection."
 }

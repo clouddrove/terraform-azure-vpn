@@ -15,19 +15,6 @@ data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
-data "azurerm_virtual_network" "vnet" {
-  depends_on          = [data.azurerm_resource_group.rg]
-  name                = var.virtual_network_name
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-data "azurerm_subnet" "subnet" {
-  depends_on           = [data.azurerm_virtual_network.vnet, data.azurerm_resource_group.rg]
-  name                 = "GatewaySubnet"
-  virtual_network_name = data.azurerm_virtual_network.vnet.name
-  resource_group_name  = data.azurerm_resource_group.rg.name
-}
-
 resource "random_string" "str" {
   length  = 6
   special = false
@@ -73,7 +60,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
     name                          = "vnetGatewayConfig"
     public_ip_address_id          = azurerm_public_ip.pip_gw.id
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = data.azurerm_subnet.subnet.id
+    subnet_id                     = var.subnet_id
   }
 
   dynamic "ip_configuration" {
@@ -82,7 +69,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
       name                          = "vnetGatewayAAConfig"
       public_ip_address_id          = azurerm_public_ip.pip_gw.id
       private_ip_address_allocation = "Dynamic"
-      subnet_id                     = data.azurerm_subnet.subnet.id
+      subnet_id                     = var.subnet_id
     }
   }
 
@@ -123,7 +110,7 @@ resource "azurerm_virtual_network_gateway" "vpngw2" {
     name                          = "vnetGatewayConfig"
     public_ip_address_id          = azurerm_public_ip.pip_gw.id
     private_ip_address_allocation = "Dynamic"
-    subnet_id                     = data.azurerm_subnet.subnet.id
+    subnet_id                     = var.subnet_id
   }
 
   dynamic "ip_configuration" {
@@ -132,7 +119,7 @@ resource "azurerm_virtual_network_gateway" "vpngw2" {
       name                          = "vnetGatewayAAConfig"
       public_ip_address_id          = azurerm_public_ip.pip_gw.id
       private_ip_address_allocation = "Dynamic"
-      subnet_id                     = data.azurerm_subnet.subnet.id
+      subnet_id                     = var.subnet_id
     }
   }
 

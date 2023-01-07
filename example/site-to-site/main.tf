@@ -15,27 +15,42 @@ module "resource_group" {
 
 #Vnet
 module "vnet" {
-  depends_on = [module.resource_group]
-  source     = "clouddrove/virtual-network/azure"
-  version    = "1.0.4"
+  source  = "clouddrove/vnet/azure"
+  version = "1.0.0"
 
-  name        = "app"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  name                = "app"
+  environment         = "test"
+  label_order         = ["name", "environment"]
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
   address_space       = "10.0.0.0/16"
   enable_ddos_pp      = false
+}
+
+module "subnet" {
+  source = "clouddrove/subnet/azure"
+
+  name                 = "app"
+  environment          = "test"
+  label_order          = ["name", "environment"]
+  resource_group_name  = module.resource_group.resource_group_name
+  location             = module.resource_group.resource_group_location
+  virtual_network_name = join("", module.vnet.vnet_name)
 
   #subnet
-  specific_name_subnet          = true
-  specific_subnet_names         = "GatewaySubnet"
-  subnet_prefixes               = ["10.0.1.0/24"]
-  disable_bgp_route_propagation = false
+  specific_name_subnet  = true
+  specific_subnet_names = "GatewaySubnet"
+  subnet_prefixes       = ["10.0.1.0/24"]
 
-  # routes
-  enabled_route_table = false
+  # route_table
+  enable_route_table = false
+  routes = [
+    {
+      name           = "rt-test"
+      address_prefix = "0.0.0.0/0"
+      next_hop_type  = "Internet"
+    }
+  ]
 }
 
 
@@ -48,7 +63,7 @@ module "vpn" {
   label_order          = ["name", "environment"]
   sts_vpn              = true
   resource_group_name  = module.resource_group.resource_group_name
-  virtual_network_name = module.vnet.vnet_name[0]
+  subnet_id            = module.subnet.specific_subnet_id[0]
   gateway_type         = "Vpn"
   local_networks = [
     {

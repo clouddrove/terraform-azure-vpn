@@ -11,18 +11,12 @@ variable "location" {
 
 }
 
-variable "virtual_network_name" {
+variable "subnet_id" {
   type        = string
   default     = ""
-  description = "The name of the virtual network"
+  description = "The ID of the Subnet where this Network Interface should be located in."
 }
 
-variable "subnet_name" {
-  type        = string
-  default     = ""
-  description = "The name of the subnet to use in VM scale set"
-
-}
 variable "name" {
   type        = string
   default     = ""

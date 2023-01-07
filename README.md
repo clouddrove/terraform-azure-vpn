@@ -186,9 +186,8 @@ Here are some examples of how you can use this module in your inventory structur
 | resource\_group\_name | A container that holds related resources for an Azure solution | `string` | `""` | no |
 | sku | Configuration of the size and capacity of the virtual network gateway | `string` | `"VpnGw3"` | no |
 | sts\_vpn | Set to false to prevent the module from creating any resources. | `bool` | `false` | no |
-| subnet\_name | The name of the subnet to use in VM scale set | `string` | `""` | no |
+| subnet\_id | The ID of the Subnet where this Network Interface should be located in. | `string` | `""` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
-| virtual\_network\_name | The name of the virtual network | `string` | `""` | no |
 | vpn\_ad | Set to false to prevent the module from creating any resources. | `bool` | `false` | no |
 | vpn\_client\_configuration | Virtual Network Gateway client configuration to accept IPSec point-to-site connections | `object({ address_space = string, vpn_client_protocols = list(string), aad_tenant = string, aad_audience = string, aad_issuer = string, vpn_auth_types = list(string) })` | `null` | no |
 | vpn\_client\_configuration\_c | Virtual Network Gateway client configuration to accept IPSec point-to-site connections | `object({ address_space = string, vpn_client_protocols = list(string), certificate = string })` | `null` | no |

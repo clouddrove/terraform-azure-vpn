@@ -58,13 +58,18 @@ module "vpn" {
   depends_on = [module.vnet]
   source     = "./../../"
 
-  name                 = "site-to-site"
-  environment          = "test"
-  label_order          = ["name", "environment"]
-  sts_vpn              = true
-  resource_group_name  = module.resource_group.resource_group_name
-  subnet_id            = module.subnet.specific_subnet_id[0]
-  gateway_type         = "Vpn"
+  name                = "site-to-site"
+  environment         = "test"
+  label_order         = ["name", "environment"]
+  sts_vpn             = true
+  resource_group_name = module.resource_group.resource_group_name
+  subnet_id           = module.subnet.specific_subnet_id[0]
+  gateway_type        = "Vpn"
+
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
+
   local_networks = [
     {
       local_gw_name         = "app-test-onpremise"

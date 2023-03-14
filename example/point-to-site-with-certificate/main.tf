@@ -64,6 +64,11 @@ module "vpn" {
   vpn_with_certificate = true
   resource_group_name  = module.resource_group.resource_group_name
   subnet_id            = module.subnet.specific_subnet_id[0]
+
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
+
   vpn_client_configuration_c = {
     address_space        = "172.16.201.0/24"
     vpn_client_protocols = ["OpenVPN", "IkeV2"]

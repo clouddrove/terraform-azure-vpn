@@ -54,6 +54,9 @@ usage: |-
       aad_audience         = "41b23e61-6c1e-4545-b367-cd054e0ed4b4"
       aad_issuer           = "https://sts.windows.net/bcffb719XXXXXXXXXXXX7ebfb2f7bdd/"
     }
+    #### enable diagnostic setting
+    diagnostic_setting_enable  = false
+    log_analytics_workspace_id = ""
     }
     ```
   ```hcl
@@ -68,6 +71,9 @@ usage: |-
     vpn_with_certificate        = true
     resource_group_name         = module.resource_group.resource_group_name
     virtual_network_name        = module.vnet.vnet_name[0]
+    #### enable diagnostic setting
+    diagnostic_setting_enable  = false
+    log_analytics_workspace_id = ""
     vpn_client_configuration_c  = {
       address_space        = "172.16.201.0/24"
       vpn_client_protocols = ["OpenVPN", "IkeV2"]
@@ -104,6 +110,10 @@ usage: |-
     resource_group_name         = module.resource_group.resource_group_name
     virtual_network_name        = module.vnet.vnet_name[0]
     gateway_type                = "Vpn"
+
+    #### enable diagnostic setting
+    diagnostic_setting_enable  = false
+    log_analytics_workspace_id = ""
     local_networks = [
       {
         local_gw_name         = "app-test-onpremise"

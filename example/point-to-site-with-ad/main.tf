@@ -55,14 +55,14 @@ module "subnet" {
 
 
 module "vpn" {
-  depends_on           = [module.vnet]
-  source               = "../../"
-  name                 = "app"
-  environment          = "test"
-  label_order          = ["name", "environment"]
-  vpn_ad               = true
-  resource_group_name  = module.resource_group.resource_group_name
-  subnet_id            = module.subnet.specific_subnet_id[0]
+  depends_on          = [module.vnet]
+  source              = "../../"
+  name                = "app"
+  environment         = "test"
+  label_order         = ["name", "environment"]
+  vpn_ad              = true
+  resource_group_name = module.resource_group.resource_group_name
+  subnet_id           = module.subnet.specific_subnet_id[0]
   vpn_client_configuration = {
     address_space        = "172.16.200.0/24"
     vpn_client_protocols = ["OpenVPN"]
@@ -72,5 +72,9 @@ module "vpn" {
     aad_issuer           = "https://sts.windows.net/bcffb719XXXXXXXXXXXX7ebfb2f7bdd/"
 
   }
+
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
 
 }

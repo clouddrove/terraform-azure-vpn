@@ -90,6 +90,9 @@ Here are some examples of how you can use this module in your inventory structur
     aad_audience         = "41b23e61-6c1e-4545-b367-cd054e0ed4b4"
     aad_issuer           = "https://sts.windows.net/bcffb719XXXXXXXXXXXX7ebfb2f7bdd/"
   }
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
   }
   ```
 ```hcl
@@ -104,6 +107,9 @@ Here are some examples of how you can use this module in your inventory structur
   vpn_with_certificate        = true
   resource_group_name         = module.resource_group.resource_group_name
   virtual_network_name        = module.vnet.vnet_name[0]
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
   vpn_client_configuration_c  = {
     address_space        = "172.16.201.0/24"
     vpn_client_protocols = ["OpenVPN", "IkeV2"]
@@ -140,6 +146,10 @@ Here are some examples of how you can use this module in your inventory structur
   resource_group_name         = module.resource_group.resource_group_name
   virtual_network_name        = module.vnet.vnet_name[0]
   gateway_type                = "Vpn"
+
+  #### enable diagnostic setting
+  diagnostic_setting_enable  = false
+  log_analytics_workspace_id = ""
   local_networks = [
     {
       local_gw_name         = "app-test-onpremise"
@@ -160,13 +170,19 @@ Here are some examples of how you can use this module in your inventory structur
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| Metric\_enable | Is this Diagnostic Metric enabled? Defaults to true. | `bool` | `true` | no |
 | app\_name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
 | bgp\_asn\_number | The Autonomous System Number (ASN) to use as part of the BGP | `string` | `"65515"` | no |
 | bgp\_peer\_weight | The weight added to routes which have been learned through BGP peering. Valid values can be between 0 and 100 | `string` | `""` | no |
 | bgp\_peering\_address | The BGP peer IP address of the virtual network gateway. This address is needed to configure the created gateway as a BGP Peer on the on-premises VPN devices. The IP address must be part of the subnet of the Virtual Network Gateway. | `string` | `""` | no |
+| category | The name of a Diagnostic Log Category Group for this Resource. | `string` | `null` | no |
+| days | The number of days for which this Retention Policy should apply. | `number` | `"90"` | no |
+| diagnostic\_setting\_enable | n/a | `bool` | `false` | no |
 | enable\_active\_active | If true, an active-active Virtual Network Gateway will be created. An active-active gateway requires a HighPerformance or an UltraPerformance sku. If false, an active-standby gateway will be created. Defaults to false. | `bool` | `false` | no |
 | enable\_bgp | If true, BGP (Border Gateway Protocol) will be enabled for this Virtual Network Gateway. Defaults to false | `bool` | `false` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |
+| eventhub\_authorization\_rule\_id | Specifies the ID of an Event Hub Namespace Authorization Rule used to send Diagnostics Data. | `string` | `null` | no |
+| eventhub\_name | Specifies the name of the Event Hub where Diagnostics Data should be sent. | `string` | `null` | no |
 | express\_route\_circuit\_id | The ID of the Express Route Circuit when creating an ExpressRoute connection | `any` | `null` | no |
 | expressroute\_sku | Configuration of the size and capacity of the virtual network gateway for ExpressRoute type. Valid options are Standard, HighPerformance, UltraPerformance, ErGw1AZ, ErGw2AZ, ErGw3AZ and depend on the type, vpn\_type and generation arguments | `string` | `"Standard"` | no |
 | gateway\_connection\_protocol | The IKE protocol version to use. Possible values are IKEv1 and IKEv2. Defaults to IKEv2 | `string` | `"IKEv2"` | no |
@@ -177,6 +193,9 @@ Here are some examples of how you can use this module in your inventory structur
 | local\_networks | List of local virtual network connections to connect to gateway | `list(object({ local_gw_name = string, local_gateway_address = string, local_address_space = list(string), shared_key = string }))` | `[]` | no |
 | local\_networks\_ipsec\_policy | IPSec policy for local networks. Only a single policy can be defined for a connection. | `any` | `null` | no |
 | location | The location/region to keep all your network resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table' | `string` | `""` | no |
+| log\_analytics\_destination\_type | Possible values are AzureDiagnostics and Dedicated, default to AzureDiagnostics. When set to Dedicated, logs sent to a Log Analytics workspace will go into resource specific tables, instead of the legacy AzureDiagnostics table. | `string` | `"AzureDiagnostics"` | no |
+| log\_analytics\_workspace\_id | n/a | `string` | `null` | no |
+| log\_enabled | Is this Diagnostic Log enabled? Defaults to true. | `string` | `true` | no |
 | managedby | ManagedBy, eg ''. | `string` | `""` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
 | peer\_virtual\_network\_gateway\_id | The ID of the peer virtual network gateway when creating a VNet-to-VNet connection | `any` | `null` | no |
@@ -184,7 +203,9 @@ Here are some examples of how you can use this module in your inventory structur
 | public\_ip\_sku | The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic | `string` | `"Basic"` | no |
 | repository | Terraform current module repo | `string` | `""` | no |
 | resource\_group\_name | A container that holds related resources for an Azure solution | `string` | `""` | no |
+| retention\_policy\_enabled | Is this Retention Policy enabled? | `bool` | `false` | no |
 | sku | Configuration of the size and capacity of the virtual network gateway | `string` | `"VpnGw3"` | no |
+| storage\_account\_id | The ID of the Storage Account where logs should be sent. | `string` | `null` | no |
 | sts\_vpn | Set to false to prevent the module from creating any resources. | `bool` | `false` | no |
 | subnet\_id | The ID of the Subnet where this Network Interface should be located in. | `string` | `""` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |

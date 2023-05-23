@@ -20,7 +20,6 @@ module "vnet" {
 
   name                = "app"
   environment         = "test"
-  label_order         = ["name", "environment"]
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
   address_space       = "10.0.0.0/16"
@@ -59,7 +58,6 @@ module "vpn" {
 
   name                = "site-to-site"
   environment         = "test"
-  label_order         = ["name", "environment"]
   sts_vpn             = true
   resource_group_name = module.resource_group.resource_group_name
   subnet_id           = module.subnet.specific_subnet_id[0]

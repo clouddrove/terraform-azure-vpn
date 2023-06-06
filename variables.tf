@@ -276,3 +276,8 @@ variable "eventhub_authorization_rule_id" {
   description = "Specifies the ID of an Event Hub Namespace Authorization Rule used to send Diagnostics Data."
 }
 
+variable "enable" {
+  type        = bool
+  default     = true
+  description = "Flag to control module creation."
+}

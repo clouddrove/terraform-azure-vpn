@@ -178,6 +178,7 @@ Here are some examples of how you can use this module in your inventory structur
 | category | The name of a Diagnostic Log Category Group for this Resource. | `string` | `null` | no |
 | days | The number of days for which this Retention Policy should apply. | `number` | `"90"` | no |
 | diagnostic\_setting\_enable | n/a | `bool` | `false` | no |
+| enable | Flag to control module creation. | `bool` | `true` | no |
 | enable\_active\_active | If true, an active-active Virtual Network Gateway will be created. An active-active gateway requires a HighPerformance or an UltraPerformance sku. If false, an active-standby gateway will be created. Defaults to false. | `bool` | `false` | no |
 | enable\_bgp | If true, BGP (Border Gateway Protocol) will be enabled for this Virtual Network Gateway. Defaults to false | `bool` | `false` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `""` | no |

@@ -1,6 +1,6 @@
-#----------------------------------------------------------
-# Resource Group, VNet, Subnet selection & Random Resources
-#----------------------------------------------------------
+##-----------------------------------------------------------------------------
+## Resource Group, VNet, Subnet selection & Random Resources
+##-----------------------------------------------------------------------------
 module "labels" {
   source      = "clouddrove/labels/azure"
   version     = "1.0.0"
@@ -11,11 +11,19 @@ module "labels" {
   repository  = var.repository
 }
 
+##-----------------------------------------------------------------------------
+## data block called for resource group. 
+##-----------------------------------------------------------------------------
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
 }
 
+##-----------------------------------------------------------------------------
+## Random string called
+## Will be used further in public ip resource in domain name label. 
+##-----------------------------------------------------------------------------
 resource "random_string" "str" {
+  count   = var.enable ? 1 : 0
   length  = 6
   special = false
   upper   = false
@@ -24,26 +32,27 @@ resource "random_string" "str" {
   }
 }
 
-#---------------------------------------------
-# Public IP for Virtual Network Gateway
-#---------------------------------------------
+##-----------------------------------------------------------------------------
+## Public IP for Virtual Network Gateway
+##-----------------------------------------------------------------------------
 resource "azurerm_public_ip" "pip_gw" {
+  count                = var.enable ? 1 : 0
   name                 = format("%s-gw-pip", module.labels.id)
   location             = data.azurerm_resource_group.rg.location
   resource_group_name  = data.azurerm_resource_group.rg.name
   allocation_method    = var.public_ip_allocation_method
   sku                  = var.public_ip_sku
   ddos_protection_mode = "VirtualNetworkInherited"
-  domain_name_label    = format("gw%s%s", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.str.result)
+  domain_name_label    = format("gw%s%s", lower(replace(var.name, "/[[:^alnum:]]/", "")), random_string.str[0].result)
   tags                 = module.labels.tags
 }
 
 
-#-------------------------------
-# Virtual Network Gateway
-#-------------------------------
+##-----------------------------------------------------------------------------
+## Virtual Network Gateway
+##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw" {
-  count               = var.vpn_ad || var.sts_vpn ? 1 : 0
+  count               = var.enable && (var.vpn_ad || var.sts_vpn) ? 1 : 0
   name                = format("%s-vpn-gateway", module.labels.id, )
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
@@ -58,7 +67,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
 
   ip_configuration {
     name                          = "vnetGatewayConfig"
-    public_ip_address_id          = azurerm_public_ip.pip_gw.id
+    public_ip_address_id          = azurerm_public_ip.pip_gw[0].id
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = var.subnet_id
   }
@@ -89,11 +98,12 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
 }
 
 
-#-------------------------------
-# Virtual Network Gateway
-#-------------------------------
+##-----------------------------------------------------------------------------
+## Virtual Network Gateway
+## Following resource will deploy virtual network gateway with certificate. 
+##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw2" {
-  count               = var.vpn_with_certificate ? 1 : 0
+  count               = var.enable && var.vpn_with_certificate ? 1 : 0
   name                = format("%s-vpn-gateway", module.labels.id, )
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
@@ -108,7 +118,7 @@ resource "azurerm_virtual_network_gateway" "vpngw2" {
 
   ip_configuration {
     name                          = "vnetGatewayConfig"
-    public_ip_address_id          = azurerm_public_ip.pip_gw.id
+    public_ip_address_id          = azurerm_public_ip.pip_gw[0].id
     private_ip_address_allocation = "Dynamic"
     subnet_id                     = var.subnet_id
   }
@@ -137,11 +147,11 @@ resource "azurerm_virtual_network_gateway" "vpngw2" {
   }
   tags = module.labels.tags
 }
-#---------------------------
-# Local Network Gateway
-#---------------------------
+##-----------------------------------------------------------------------------
+## Local Network Gateway
+##-----------------------------------------------------------------------------
 resource "azurerm_local_network_gateway" "localgw" {
-  count               = length(var.local_networks)
+  count               = var.enable && var.local_networks != null ? length(var.local_networks) : 0
   name                = "localgw-${var.local_networks[count.index].local_gw_name}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
@@ -159,11 +169,11 @@ resource "azurerm_local_network_gateway" "localgw" {
   tags = module.labels.tags
 }
 
-#---------------------------------------
-# Virtual Network Gateway Connection
-#---------------------------------------
+##-----------------------------------------------------------------------------
+## Virtual Network Gateway Connection
+##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
-  count                           = var.gateway_connection_type == "ExpressRoute" ? 1 : length(var.local_networks)
+  count                           = var.enable && var.gateway_connection_type == "ExpressRoute" ? 1 : length(var.local_networks)
   name                            = var.gateway_connection_type == "ExpressRoute" ? "localgw-expressroute-connection" : "localgw-connection-${var.local_networks[count.index].local_gw_name}"
   resource_group_name             = data.azurerm_resource_group.rg.name
   location                        = data.azurerm_resource_group.rg.location
@@ -191,8 +201,11 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
   tags = module.labels.tags
 }
 
+##-----------------------------------------------------------------------------
+## Following resource will deploy diagnostic setting for virtual network gateway. 
+##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "main" {
-  count                          = var.diagnostic_setting_enable ? 1 : 0
+  count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-vpn-gateway-diagnostic-log", module.labels.id)
   target_resource_id             = var.vpn_ad || var.sts_vpn ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
   storage_account_id             = var.storage_account_id
@@ -232,8 +245,11 @@ resource "azurerm_monitor_diagnostic_setting" "main" {
   }
 }
 
+##-----------------------------------------------------------------------------
+## Following resource will deploy diagnostic setting for public ip. 
+##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
-  count                          = var.diagnostic_setting_enable ? 1 : 0
+  count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-gw-pip-diagnostic-log", module.labels.id)
   target_resource_id             = join("", azurerm_public_ip.pip_gw.*.id)
   storage_account_id             = var.storage_account_id

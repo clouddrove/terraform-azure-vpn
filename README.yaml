@@ -15,9 +15,12 @@ github_repo: clouddrove/terraform-azure-vpn
 
 # Badges to display
 badges:
-  - name: "Terraform"
-    image: "https://img.shields.io/badge/Terraform-v1.1.7-green"
-    url: "https://www.terraform.io"
+  - name: "Latest Release"
+    image: "https://img.shields.io/github/release/clouddrove/terraform-azure-dns.svg"
+    url: "https://github.com/clouddrove/terraform-azure-dns/releases/latest"
+  - name: "tfsec"
+    image: "https://github.com/clouddrove/terraform-azure-dns/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-azure-dns/actions/workflows/tfsec.yml"
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
@@ -43,48 +46,52 @@ usage: |-
     name                        = "app"
     environment                 = "test"
     label_order                 = ["name", "environment"]
-    vpn_ad                      = true
-    resource_group_name         = module.resource_group.resource_group_name
-    virtual_network_name        = module.vnet.vnet_name[0]
-    vpn_client_configuration    = {
+    vpn_ad              = true
+    resource_group_name = module.resource_group.resource_group_name
+    subnet_id           = module.subnet.specific_subnet_id[0]
+    vpn_gw_generation   = "Generation1"
+    sku                 = "VpnGw1"
+    vpn_client_configuration = {
       address_space        = "172.16.200.0/24"
       vpn_client_protocols = ["OpenVPN"]
       vpn_auth_types       = ["AAD"]
-      aad_tenant           = "https://login.microsoftonline.com/bcffb719XXXXXXXXXXXX7ebfb2f7bdd"
+      aad_tenant           = "https://login.microsoftonline.com/xxxxxxxxxxxxxxx"
       aad_audience         = "41b23e61-6c1e-4545-b367-cd054e0ed4b4"
-      aad_issuer           = "https://sts.windows.net/bcffb719XXXXXXXXXXXX7ebfb2f7bdd/"
+      aad_issuer           = "https://sts.windows.net/xxxxxxxxxxxxxxxxxxxx/"
     }
     #### enable diagnostic setting
     diagnostic_setting_enable  = false
     log_analytics_workspace_id = ""
-    }
-    ```
+   }
+  ```
   ```hcl
-  #  vpn with certificate
+    # vpn with certificate
     module "vpn" {
-    source                      = "clouddrove/vpn/azure"
-    version                     = "1.0.0"
-    depends_on                  = [module.vnet]
-    name                        = "app"
-    environment                 = "test"
-    label_order                 = ["name", "environment"]
-    vpn_with_certificate        = true
-    resource_group_name         = module.resource_group.resource_group_name
-    virtual_network_name        = module.vnet.vnet_name[0]
+    source               = "clouddrove/vpn/azure"
+    version              = "1.0.0"
+    depends_on           = [module.vnet]
+    name                 = "app"
+    environment          = "test"
+    label_order          = ["name", "environment"]
+    vpn_with_certificate = true
+    resource_group_name  = module.resource_group.resource_group_name
+    subnet_id            = module.subnet.specific_subnet_id[0]
+    vpn_gw_generation    = "Generation1"
+    sku                  = "Basic"
     #### enable diagnostic setting
     diagnostic_setting_enable  = false
     log_analytics_workspace_id = ""
-    vpn_client_configuration_c  = {
+    vpn_client_configuration_c = {
       address_space        = "172.16.201.0/24"
-      vpn_client_protocols = ["OpenVPN", "IkeV2"]
+      vpn_client_protocols = ["SSTP"]
       certificate          = <<EOF
     MIIC5jCCAc6gAwIBAgIIUeUhLYf6UNwwDQYJKoZIhvcNAQELBQAwETEPMA0GA1UE
     AxMGVlBOIENBMB4XDTIyMTExMTE0MzA1NFoXDTI1MTExMDE0MzA1NFowETEPMA0G
-    A1UEAxMGVlBOIENBMIIBIjaNBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6bxr
-    s1kwbRztA7mH79EoIlyZsmAhdIXV8ehbzNIakk1ByOqtBpQK1Xvde1z6rjL1hzCn
+    A1UEAxMGVlBOIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6bxr
+    s1kwbRztA7mH79EoIlyZsmAhdIXV8ehbzNIank1ByOqtBpQK1Xvde1z6rjL1hzCn
     XD6xjW+xfF+yQ/zMyc6udrK2OvtuFmAsBYL5Bbb+Nf7U6Rp9IWZA6f/HO+XLft6q
     sC0UD1wEK6LSn/1u+fCfT3UCMCjpskAtE3ossZCuhUjJ8jGNUb07Z84dQEQf0s3n
-    13V0kqNfpaxAhlWUVWrvKWlEGigoTqk4NcTNAzUEGR1b4Rt8qNzIwk8DhODfiOwT
+    13V0kqNfpaxAhlWUVWrvKWlEGigoTqk6NcTNAzUEGR1b4Rt8qNzIwk8DhODfiOwT
     ILsB3XWyA/IOv2eL3Eqx/lkykIBSEJALPE7j6igyTMoSPHtQA7NWrgYeWgiWh1AQ
     VJpuY1vAIm3gfMAEoQIDAQABo0IwQDAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB
     /wQEAwIBBjAdBgNVHQ4EFgQUiEbr34wufRJ6+1Fh5am89bxRCuswDQYJKoZIhvcN
@@ -96,10 +103,10 @@ usage: |-
     Mb0BNzEPxRFt+L8A72gd/nTcxGrxEcQlqEc=
     EOF
     }
-    }
-    ```
+  }
+  ```
   ```hcl
-  #  site-to-site vpn
+    #site-to-site vpn
     module "vpn" {
     source                      = "clouddrove/vpn/azure"
     version                     = "1.0.0"
@@ -110,7 +117,6 @@ usage: |-
     resource_group_name         = module.resource_group.resource_group_name
     virtual_network_name        = module.vnet.vnet_name[0]
     gateway_type                = "Vpn"
-
     #### enable diagnostic setting
     diagnostic_setting_enable  = false
     log_analytics_workspace_id = ""
@@ -123,7 +129,7 @@ usage: |-
       },
     ]
    }
-   ```
+  ```
 
 
 

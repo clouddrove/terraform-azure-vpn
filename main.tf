@@ -12,7 +12,7 @@ module "labels" {
 }
 
 ##-----------------------------------------------------------------------------
-## data block called for resource group. 
+## data block called for resource group.
 ##-----------------------------------------------------------------------------
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
@@ -20,7 +20,7 @@ data "azurerm_resource_group" "rg" {
 
 ##-----------------------------------------------------------------------------
 ## Random string called
-## Will be used further in public ip resource in domain name label. 
+## Will be used further in public ip resource in domain name label.
 ##-----------------------------------------------------------------------------
 resource "random_string" "str" {
   count   = var.enable ? 1 : 0
@@ -47,24 +47,28 @@ resource "azurerm_public_ip" "pip_gw" {
   tags                 = module.labels.tags
 }
 
-
 ##-----------------------------------------------------------------------------
 ## Virtual Network Gateway
 ##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw" {
-  count               = var.enable && (var.vpn_ad || var.sts_vpn) ? 1 : 0
-  name                = format("%s-vpn-gateway", module.labels.id, )
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  type                = var.gateway_type
-  vpn_type            = var.vpn_type
-  sku                 = var.sku
-  active_active       = var.vpn_gw_sku != "Basic" ? var.enable_active_active : false
-  enable_bgp          = var.vpn_gw_sku != "Basic" ? var.enable_bgp : false
-  generation          = var.vpn_gw_generation
-
-
-
+  count                                 = var.enable && (var.vpn_ad || var.sts_vpn) ? 1 : 0
+  name                                  = format("%s-vpn-gateway", module.labels.id, )
+  resource_group_name                   = data.azurerm_resource_group.rg.name
+  location                              = data.azurerm_resource_group.rg.location
+  type                                  = var.gateway_type
+  vpn_type                              = var.vpn_type
+  sku                                   = var.sku
+  active_active                         = var.vpn_gw_sku != "Basic" ? var.enable_active_active : false
+  enable_bgp                            = var.vpn_gw_sku != "Basic" ? var.enable_bgp : false
+  generation                            = var.vpn_gw_generation
+  default_local_network_gateway_id      = var.default_local_network_gateway_id
+  edge_zone                             = var.edge_zone
+  private_ip_address_enabled            = var.private_ip_address_enabled
+  bgp_route_translation_for_nat_enabled = var.bgp_route_translation_for_nat_enabled
+  dns_forwarding_enabled                = var.dns_forwarding_enabled
+  ip_sec_replay_protection_enabled      = var.ip_sec_replay_protection_enabled
+  remote_vnet_traffic_enabled           = var.remote_vnet_traffic_enabled
+  virtual_wan_traffic_enabled           = var.virtual_wan_traffic_enabled
   ip_configuration {
     name                          = "vnetGatewayConfig"
     public_ip_address_id          = azurerm_public_ip.pip_gw[0].id
@@ -76,7 +80,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
     for_each = var.enable_active_active ? [true] : []
     content {
       name                          = "vnetGatewayAAConfig"
-      public_ip_address_id          = azurerm_public_ip.pip_gw.id
+      public_ip_address_id          = azurerm_public_ip.pip_gw[0].id
       private_ip_address_allocation = "Dynamic"
       subnet_id                     = var.subnet_id
     }
@@ -97,24 +101,29 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
   tags = module.labels.tags
 }
 
-
 ##-----------------------------------------------------------------------------
 ## Virtual Network Gateway
-## Following resource will deploy virtual network gateway with certificate. 
+## Following resource will deploy virtual network gateway with certificate.
 ##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw2" {
-  count               = var.enable && var.vpn_with_certificate ? 1 : 0
-  name                = format("%s-vpn-gateway", module.labels.id, )
-  resource_group_name = data.azurerm_resource_group.rg.name
-  location            = data.azurerm_resource_group.rg.location
-  type                = var.gateway_type
-  vpn_type            = var.vpn_type
-  sku                 = var.sku
-  active_active       = var.vpn_gw_sku != "Basic" ? var.enable_active_active : false
-  enable_bgp          = var.vpn_gw_sku != "Basic" ? var.enable_bgp : false
-  generation          = var.vpn_gw_generation
-
-
+  count                                 = var.enable && var.vpn_with_certificate ? 1 : 0
+  name                                  = format("%s-vpn-gateway", module.labels.id, )
+  resource_group_name                   = data.azurerm_resource_group.rg.name
+  location                              = data.azurerm_resource_group.rg.location
+  type                                  = var.gateway_type
+  vpn_type                              = var.vpn_type
+  sku                                   = var.sku
+  active_active                         = var.vpn_gw_sku != "Basic" ? var.enable_active_active : false
+  enable_bgp                            = var.vpn_gw_sku != "Basic" ? var.enable_bgp : false
+  generation                            = var.vpn_gw_generation
+  default_local_network_gateway_id      = var.default_local_network_gateway_id
+  edge_zone                             = var.edge_zone
+  private_ip_address_enabled            = var.private_ip_address_enabled
+  bgp_route_translation_for_nat_enabled = var.bgp_route_translation_for_nat_enabled
+  dns_forwarding_enabled                = var.dns_forwarding_enabled
+  ip_sec_replay_protection_enabled      = var.ip_sec_replay_protection_enabled
+  remote_vnet_traffic_enabled           = var.remote_vnet_traffic_enabled
+  virtual_wan_traffic_enabled           = var.virtual_wan_traffic_enabled
 
   ip_configuration {
     name                          = "vnetGatewayConfig"
@@ -147,6 +156,7 @@ resource "azurerm_virtual_network_gateway" "vpngw2" {
   }
   tags = module.labels.tags
 }
+
 ##-----------------------------------------------------------------------------
 ## Local Network Gateway
 ##-----------------------------------------------------------------------------
@@ -157,6 +167,7 @@ resource "azurerm_local_network_gateway" "localgw" {
   location            = data.azurerm_resource_group.rg.location
   gateway_address     = var.local_networks[count.index].local_gateway_address
   address_space       = var.local_networks[count.index].local_address_space
+  gateway_fqdn        = var.gateway_fqdn
 
   dynamic "bgp_settings" {
     for_each = var.local_bgp_settings != null ? [true] : []
@@ -178,12 +189,17 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
   resource_group_name             = data.azurerm_resource_group.rg.name
   location                        = data.azurerm_resource_group.rg.location
   type                            = var.gateway_connection_type
-  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw[*].id) : join("", azurerm_virtual_network_gateway.vpngw2[*].id)
   local_network_gateway_id        = var.gateway_connection_type != "ExpressRoute" ? azurerm_local_network_gateway.localgw[count.index].id : null
   express_route_circuit_id        = var.gateway_connection_type == "ExpressRoute" ? var.express_route_circuit_id : null
   peer_virtual_network_gateway_id = var.gateway_connection_type == "Vnet2Vnet" ? var.peer_virtual_network_gateway_id : null
   shared_key                      = var.gateway_connection_type != "ExpressRoute" ? var.local_networks[count.index].shared_key : null
-  connection_protocol             = var.gateway_connection_type == "IPSec" && var.vpn_gw_sku == ["VpnGw1", "VpnGw2", "VpnGw3", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ"] ? var.gateway_connection_protocol : null
+  connection_protocol             = var.gateway_connection_type == "IPSec" && var.vpn_gw_sku == ["Basic", "VpnGw1", "VpnGw2", "VpnGw3", "VpnGw1AZ", "VpnGw2AZ", "VpnGw3AZ"] ? var.gateway_connection_protocol : null
+  authorization_key               = var.authorization_key
+  dpd_timeout_seconds             = var.dpd_timeout_seconds
+  local_azure_ip_address_enabled  = var.local_azure_ip_address_enabled
+  routing_weight                  = var.routing_weight
+  connection_mode                 = var.connection_mode
 
   dynamic "ipsec_policy" {
     for_each = var.local_networks_ipsec_policy != null ? [true] : []
@@ -202,88 +218,66 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for virtual network gateway. 
+## Following resource will deploy diagnostic setting for virtual network gateway.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "main" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-vpn-gateway-diagnostic-log", module.labels.id)
-  target_resource_id             = var.vpn_ad || var.sts_vpn ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  target_resource_id             = var.vpn_ad || var.sts_vpn ? join("", azurerm_virtual_network_gateway.vpngw[*].id) : join("", azurerm_virtual_network_gateway.vpngw2[*].id)
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+
+  dynamic "enabled_log" {
+    for_each = var.pip_logs.enabled ? var.pip_logs.category != null ? var.pip_logs.category : var.pip_logs.category_group : []
+    content {
+      category       = var.pip_logs.category != null ? enabled_log.value : null
+      category_group = var.pip_logs.category == null ? enabled_log.value : null
     }
   }
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "metric" {
+    for_each = var.Metric_enable ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
-    enabled = var.log_enabled
   }
 
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
-  }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
   }
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for public ip. 
+## Following resource will deploy diagnostic setting for public ip.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-gw-pip-diagnostic-log", module.labels.id)
-  target_resource_id             = join("", azurerm_public_ip.pip_gw.*.id)
+  target_resource_id             = join("", azurerm_public_ip.pip_gw[*].id)
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+
+  dynamic "enabled_log" {
+    for_each = var.pip_logs.enabled ? var.pip_logs.category != null ? var.pip_logs.category : var.pip_logs.category_group : []
+    content {
+      category       = var.pip_logs.category != null ? enabled_log.value : null
+      category_group = var.pip_logs.category == null ? enabled_log.value : null
     }
   }
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "metric" {
+    for_each = var.Metric_enable ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
-    enabled = var.log_enabled
   }
 
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
-  }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
   }

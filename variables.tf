@@ -173,18 +173,6 @@ variable "log_analytics_destination_type" {
   description = "Possible values are AzureDiagnostics and Dedicated, default to AzureDiagnostics. When set to Dedicated, logs sent to a Log Analytics workspace will go into resource specific tables, instead of the legacy AzureDiagnostics table."
 }
 
-variable "retention_policy_enabled" {
-  type        = bool
-  default     = false
-  description = "Is this Retention Policy enabled?"
-}
-
-variable "days" {
-  type        = number
-  default     = "90"
-  description = " The number of days for which this Retention Policy should apply."
-}
-
 variable "Metric_enable" {
   type        = bool
   default     = true
@@ -200,18 +188,6 @@ variable "diagnostic_setting_enable" {
 variable "log_analytics_workspace_id" {
   type    = string
   default = null
-}
-
-variable "category" {
-  type        = string
-  default     = null
-  description = " The name of a Diagnostic Log Category Group for this Resource."
-}
-
-variable "log_enabled" {
-  type        = string
-  default     = true
-  description = " Is this Diagnostic Log enabled? Defaults to true."
 }
 
 variable "storage_account_id" {
@@ -320,4 +296,16 @@ variable "connection_mode" {
   type        = string
   default     = "Default"
   description = "Connection mode to use. Possible values are Default, InitiatorOnly and ResponderOnly. Defaults to Default. Changing this value will force a resource to be created."
+}
+
+variable "pip_logs" {
+  type = object({
+    enabled        = bool
+    category       = optional(list(string))
+    category_group = optional(list(string))
+  })
+  default = {
+    enabled        = true
+    category_group = ["AllLogs"]
+  }
 }

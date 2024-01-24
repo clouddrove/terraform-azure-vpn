@@ -6,16 +6,16 @@ on:
   workflow_dispatch:
 jobs:
   point-to-site-with-ad-example:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.10
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.2.1
     with:
       working_directory: './_example/point-to-site-with-ad/'
 
   point-to-site-with-certificate-example:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.10
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.2.1
     with:
       working_directory: './_example/point-to-site-with-certificate/'
 
   site-to-site-example:
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.0.10
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@1.2.1
     with:
       working_directory: './_example/site-to-site/'

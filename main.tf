@@ -229,33 +229,22 @@ resource "azurerm_monitor_diagnostic_setting" "main" {
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+
+  dynamic "enabled_log" {
+    for_each = var.pip_logs.enabled ? var.pip_logs.category != null ? var.pip_logs.category : var.pip_logs.category_group : []
+    content {
+      category       = var.pip_logs.category != null ? enabled_log.value : null
+      category_group = var.pip_logs.category == null ? enabled_log.value : null
     }
   }
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "metric" {
+    for_each = var.Metric_enable ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
-    enabled = var.log_enabled
   }
 
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
-  }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
   }
@@ -273,34 +262,22 @@ resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+
+  dynamic "enabled_log" {
+    for_each = var.pip_logs.enabled ? var.pip_logs.category != null ? var.pip_logs.category : var.pip_logs.category_group : []
+    content {
+      category       = var.pip_logs.category != null ? enabled_log.value : null
+      category_group = var.pip_logs.category == null ? enabled_log.value : null
+    }
+  }
+  dynamic "metric" {
+    for_each = var.Metric_enable ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
   }
 
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
-  }
-
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
-  }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
   }

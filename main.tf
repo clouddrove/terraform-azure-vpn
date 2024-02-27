@@ -173,13 +173,13 @@ resource "azurerm_local_network_gateway" "localgw" {
 ## Virtual Network Gateway Connection
 ##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
-  count                           = var.enable && var.gateway_connection_type == "ExpressRoute" ? 1 : length(var.local_networks)
+  count                           = var.enable && var.gateway_connection_type == "ExpressRoute" ? length(var.local_networks) : 0
   name                            = var.gateway_connection_type == "ExpressRoute" ? "localgw-expressroute-connection" : "localgw-connection-${var.local_networks[count.index].local_gw_name}"
   resource_group_name             = data.azurerm_resource_group.rg.name
   location                        = data.azurerm_resource_group.rg.location
   type                            = var.gateway_connection_type
-  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
-  local_network_gateway_id        = var.gateway_connection_type != "ExpressRoute" ? azurerm_local_network_gateway.localgw[count.index].id : null
+  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw[0].id) : join("", azurerm_virtual_network_gateway.vpngw2[0].id)
+  local_network_gateway_id        = var.gateway_connection_type != "ExpressRoute" && length(azurerm_local_network_gateway.localgw) > 0 ? azurerm_local_network_gateway.localgw[0].id : null
   express_route_circuit_id        = var.gateway_connection_type == "ExpressRoute" ? var.express_route_circuit_id : null
   peer_virtual_network_gateway_id = var.gateway_connection_type == "Vnet2Vnet" ? var.peer_virtual_network_gateway_id : null
   shared_key                      = var.gateway_connection_type != "ExpressRoute" ? var.local_networks[count.index].shared_key : null

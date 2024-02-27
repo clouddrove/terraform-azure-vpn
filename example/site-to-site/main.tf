@@ -26,33 +26,38 @@ module "resource_group" {
 ## Virtual Network in which vpn subnet(Gateway Subnet) will be created. 
 ##-----------------------------------------------------------------------------
 module "vnet" {
-  source              = "clouddrove/vnet/azure"
-  version             = "1.0.3"
-  name                = local.name
-  environment         = local.environment
+  source  = "clouddrove/vnet/azure"
+  version = "1.0.4"
+
+  name                = "app"
+  environment         = "test"
+  label_order         = ["name", "environment"]
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
-  address_space       = "10.0.0.0/16"
+  address_spaces      = ["10.30.0.0/16"]
 }
+
 
 ##----------------------------------------------------------------------------- 
 ## Subnet module call. 
 ## Name specific subnet for vpn will be created. 
 ##-----------------------------------------------------------------------------
 module "subnet" {
-  source               = "clouddrove/subnet/azure"
-  version              = "1.0.2"
-  name                 = local.name
-  environment          = local.environment
+  source  = "clouddrove/subnet/azure"
+  version = "1.1.0"
+
+  name                 = "app"
+  environment          = "test"
+  label_order          = ["name", "environment"]
   resource_group_name  = module.resource_group.resource_group_name
   location             = module.resource_group.resource_group_location
-  virtual_network_name = join("", module.vnet.vnet_name)
+  virtual_network_name = module.vnet.vnet_name
+
   #subnet
-  specific_name_subnet  = true
-  specific_subnet_names = "GatewaySubnet"
-  subnet_prefixes       = ["10.0.1.0/24"]
+  subnet_names    = ["default"]
+  subnet_prefixes = ["10.30.0.0/20"]
+
   # route_table
-  enable_route_table = false
   routes = [
     {
       name           = "rt-test"

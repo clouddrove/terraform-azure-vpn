@@ -67,15 +67,15 @@ module "subnet" {
 ## Following module will deploy site to site vpn with ssl certificate in azure infratsructure.  
 ##-----------------------------------------------------------------------------
 module "vpn" {
-  depends_on          = [module.vnet]
-  source              = "../../"
-  name                = "site-to-site"
-  environment         = local.environment
-  sts_vpn             = true
-  resource_group_name = module.resource_group.resource_group_name
-  subnet_id           = module.subnet.specific_subnet_id[0]
-  gateway_type        = "Vpn"
-  public_ip_sku       = "Standard"
+  depends_on                  = [module.vnet]
+  source                      = "../../"
+  name                        = "site-to-site"
+  environment                 = local.environment
+  sts_vpn                     = true
+  resource_group_name         = module.resource_group.resource_group_name
+  subnet_id                   = module.subnet.specific_subnet_id[0]
+  gateway_type                = "Vpn"
+  public_ip_sku               = "Standard"
   public_ip_allocation_method = "Static"
   #### enable diagnostic setting
   diagnostic_setting_enable  = false

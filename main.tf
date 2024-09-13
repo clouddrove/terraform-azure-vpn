@@ -178,7 +178,7 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
   resource_group_name             = data.azurerm_resource_group.rg.name
   location                        = data.azurerm_resource_group.rg.location
   type                            = var.gateway_connection_type
-  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  virtual_network_gateway_id      = var.sts_vpn == true ? azurerm_virtual_network_gateway.vpngw[0].id : azurerm_virtual_network_gateway.vpngw2[0].id
   local_network_gateway_id        = var.gateway_connection_type != "ExpressRoute" ? azurerm_local_network_gateway.localgw[count.index].id : null
   express_route_circuit_id        = var.gateway_connection_type == "ExpressRoute" ? var.express_route_circuit_id : null
   peer_virtual_network_gateway_id = var.gateway_connection_type == "Vnet2Vnet" ? var.peer_virtual_network_gateway_id : null
@@ -207,7 +207,7 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
 resource "azurerm_monitor_diagnostic_setting" "main" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-vpn-gateway-diagnostic-log", module.labels.id)
-  target_resource_id             = var.vpn_ad || var.sts_vpn ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  target_resource_id             = var.vpn_ad || var.sts_vpn ? azurerm_virtual_network_gateway.vpngw[0].id : azurerm_virtual_network_gateway.vpngw2[0].id
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id

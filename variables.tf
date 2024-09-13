@@ -38,8 +38,9 @@ variable "public_ip_allocation_method" {
 }
 
 variable "public_ip_sku" {
-  description = "The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic"
+  type        = string
   default     = "Basic"
+  description = "The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic"
 }
 
 variable "gateway_type" {
@@ -134,18 +135,21 @@ variable "local_bgp_settings" {
 }
 
 variable "gateway_connection_type" {
-  description = "The type of connection. Valid options are IPsec (Site-to-Site), ExpressRoute (ExpressRoute), and Vnet2Vnet (VNet-to-VNet)"
+  type        = string
   default     = "IPsec"
+  description = "The type of connection. Valid options are IPsec (Site-to-Site), ExpressRoute (ExpressRoute), and Vnet2Vnet (VNet-to-VNet)"
 }
 
 variable "express_route_circuit_id" {
-  description = "The ID of the Express Route Circuit when creating an ExpressRoute connection"
+  type        = string
   default     = null
+  description = "The ID of the Express Route Circuit when creating an ExpressRoute connection"
 }
 
 variable "peer_virtual_network_gateway_id" {
-  description = "The ID of the peer virtual network gateway when creating a VNet-to-VNet connection"
+  type        = string
   default     = null
+  description = "The ID of the peer virtual network gateway when creating a VNet-to-VNet connection"
 }
 
 variable "gateway_connection_protocol" {

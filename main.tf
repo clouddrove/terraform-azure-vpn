@@ -249,7 +249,7 @@ resource "azurerm_monitor_diagnostic_setting" "main" {
 resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-gw-pip-diagnostic-log", module.labels.id)
-  target_resource_id             = join("", azurerm_public_ip.pip_gw.*.id)
+  target_resource_id             = azurerm_public_ip.pip_gw[0].id
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id

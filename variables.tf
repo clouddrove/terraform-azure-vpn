@@ -75,6 +75,12 @@ variable "vpn_client_configuration" {
   description = "Virtual Network Gateway client configuration to accept IPSec point-to-site connections"
 }
 
+variable "local_networks_ipsec_policy" {
+  type        = map(string)
+  default     = null
+  description = "IPSec policy for local networks. Only a single policy can be defined for a connection."
+}
+
 variable "vpn_client_configuration_c" {
   type        = object({ address_space = string, vpn_client_protocols = list(string), certificate = string })
   default     = null

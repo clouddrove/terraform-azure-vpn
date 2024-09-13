@@ -1,0 +1,24 @@
+name: tf-checks
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+  workflow_dispatch:
+jobs:
+   site-to-site-example:
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    secrets: inherit
+    with:
+      working_directory: './examples/site-to-site/'
+     
+   complete-example:
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    secrets: inherit
+    with:
+      working_directory: './examples/complete/'
+
+   point-to-site-with-certificate-example:
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    secrets: inherit
+    with:
+      working_directory: './examples/point-to-site-with-certificate/'

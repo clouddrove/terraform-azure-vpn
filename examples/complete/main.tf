@@ -1,6 +1,6 @@
 provider "azurerm" {
   features {}
-  subscription_id = ""
+  subscription_id = "000000-11111-1223-XXX-XXXXXXXXXXXX"
 }
 
 locals {
@@ -41,7 +41,7 @@ module "vnet" {
 ##-----------------------------------------------------------------------------
 module "subnet" {
   source               = "clouddrove/subnet/azure"
-  version              = "1.0.2"
+  version              = "1.2.1"
   name                 = local.name
   environment          = local.environment
   resource_group_name  = module.resource_group.resource_group_name
@@ -49,7 +49,7 @@ module "subnet" {
   virtual_network_name = join("", module.vnet.vnet_name)
   #subnet
   specific_name_subnet  = true
-  specific_subnet_names = "GatewaySubnet"
+  specific_subnet_names = ["GatewaySubnet"]
   subnet_prefixes       = ["10.0.1.0/24"]
   # route_table
   enable_route_table = false
@@ -64,26 +64,25 @@ module "subnet" {
 
 ##----------------------------------------------------------------------------- 
 ## VPN module call. 
-## Following module will deploy site to site vpn with ssl certificate in azure infratsructure.  
+## Following module will deploy point to site vpn in azure infratsructure.  
 ##-----------------------------------------------------------------------------
 module "vpn" {
   depends_on          = [module.vnet]
   source              = "../../"
-  name                = "site-to-site"
+  name                = local.name
   environment         = local.environment
-  sts_vpn             = true
+  vpn_ad              = true
   resource_group_name = module.resource_group.resource_group_name
   subnet_id           = module.subnet.specific_subnet_id[0]
-  gateway_type        = "Vpn"
+  vpn_client_configuration = {
+    address_space        = "172.16.200.0/24"
+    vpn_client_protocols = ["OpenVPN"]
+    vpn_auth_types       = ["AAD"]
+    aad_tenant           = "https://login.microsoftonline.com/bcffb719XXXXXXXXXXXX7ebfb2f7bdd"
+    aad_audience         = "41b23e61-6c1e-4545-b367-cd054e0ed4b4"
+    aad_issuer           = "https://sts.windows.net/bcffb719XXXXXXXXXXXX7ebfb2f7bdd/"
+  }
   #### enable diagnostic setting
   diagnostic_setting_enable  = false
   log_analytics_workspace_id = ""
-  local_networks = [
-    {
-      local_gw_name         = "app-test-onpremise"
-      local_gateway_address = "20.232.135.45"
-      local_address_space   = ["30.1.0.0/16"]
-      shared_key            = "xpCGkHTBQmDvZK9HnLr7DAvH"
-    },
-  ]
 }

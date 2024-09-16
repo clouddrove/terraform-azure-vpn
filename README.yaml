@@ -5,13 +5,13 @@
 #
 
 # Name of this project
-name: Terraform AZURE FLEXIBLE MYSQL
+name: Terraform AZURE VPN
 
 # License of this project
 license: "APACHE"
 
 # Canonical GitHub repo
-github_repo: clouddrove/terraform-azure-flexible-mysql
+github_repo: clouddrove/terraform-azure-vpn
 
 # Badges to display
 badges:
@@ -46,7 +46,7 @@ module_dependencies:
 
 #  description of this project
 description: |-
-  Terraform module to create flexible-mysql resource on AZURE.
+  Terraform module to create vpn resource on AZURE.
 
 # How to use this project
 usage: |-

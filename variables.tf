@@ -176,21 +176,6 @@ variable "log_analytics_destination_type" {
   default     = "AzureDiagnostics"
   description = "Possible values are AzureDiagnostics and Dedicated, default to AzureDiagnostics. When set to Dedicated, logs sent to a Log Analytics workspace will go into resource specific tables, instead of the legacy AzureDiagnostics table."
 }
-variable "retention_policy_enabled" {
-  type        = bool
-  default     = false
-  description = "Is this Retention Policy enabled?"
-}
-variable "days" {
-  type        = number
-  default     = "90"
-  description = " The number of days for which this Retention Policy should apply."
-}
-variable "Metric_enable" {
-  type        = bool
-  default     = true
-  description = "Is this Diagnostic Metric enabled? Defaults to true."
-}
 variable "diagnostic_setting_enable" {
   type    = bool
   default = false
@@ -199,13 +184,6 @@ variable "log_analytics_workspace_id" {
   type    = string
   default = null
 }
-
-variable "category" {
-  type        = string
-  default     = null
-  description = " The name of a Diagnostic Log Category Group for this Resource."
-}
-
 variable "storage_account_id" {
   type        = string
   default     = null

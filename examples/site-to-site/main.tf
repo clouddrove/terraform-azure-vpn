@@ -63,6 +63,25 @@ module "subnet" {
 }
 
 ##----------------------------------------------------------------------------- 
+## Log Analytics module call.
+##-----------------------------------------------------------------------------
+module "log-analytics" {
+  source                           = "clouddrove/log-analytics/azure"
+  version                          = "1.1.0"
+  name                             = local.name
+  environment                      = local.environment
+  create_log_analytics_workspace   = true
+  log_analytics_workspace_sku      = "PerGB2018"
+  retention_in_days                = 90
+  daily_quota_gb                   = "-1"
+  internet_ingestion_enabled       = true
+  internet_query_enabled           = true
+  resource_group_name              = module.resource_group.resource_group_name
+  log_analytics_workspace_location = module.resource_group.resource_group_location
+  log_analytics_workspace_id       = module.log-analytics.workspace_id
+}
+
+##----------------------------------------------------------------------------- 
 ## VPN module call. 
 ## Following module will deploy site to site vpn with ssl certificate in azure infratsructure.  
 ##-----------------------------------------------------------------------------
@@ -78,8 +97,8 @@ module "vpn" {
   public_ip_sku               = "Standard"
   public_ip_allocation_method = "Static"
   #### enable diagnostic setting
-  diagnostic_setting_enable  = false
-  log_analytics_workspace_id = ""
+  diagnostic_setting_enable  = true
+  log_analytics_workspace_id = module.log-analytics.workspace_id
   local_networks = [
     {
       local_gw_name         = "app-test-onpremise"
@@ -88,4 +107,14 @@ module "vpn" {
       shared_key            = "xpCGkHTBQmDvZK9HnLr7DAvH"
     },
   ]
+  local_networks_ipsec_policy = {
+    dh_group         = "ECP384"
+    ike_encryption   = "AES256"
+    ike_integrity    = "SHA256"
+    ipsec_encryption = "AES256"
+    ipsec_integrity  = "SHA256"
+    pfs_group        = "ECP384"
+    sa_datasize      = null
+    sa_lifetime      = 3600
+  }
 }

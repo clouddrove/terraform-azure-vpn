@@ -227,3 +227,15 @@ variable "enable" {
   default     = true
   description = "Flag to control module creation."
 }
+
+variable "metric_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether metric diagnonsis should be enable in diagnostic settings for flexible Mysql."
+}
+
+variable "log_category" {
+  type        = list(string)
+  default     = ["MySqlAuditLogs"]
+  description = "Categories of logs to be recorded in diagnostic setting. Acceptable values are MySqlSlowLogs , MySqlAuditLogs "
+}

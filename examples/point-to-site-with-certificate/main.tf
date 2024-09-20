@@ -63,6 +63,25 @@ module "subnet" {
 }
 
 ##----------------------------------------------------------------------------- 
+## Log Analytics module call.
+##-----------------------------------------------------------------------------
+module "log-analytics" {
+  source                           = "clouddrove/log-analytics/azure"
+  version                          = "1.1.0"
+  name                             = local.name
+  environment                      = local.environment
+  create_log_analytics_workspace   = true
+  log_analytics_workspace_sku      = "PerGB2018"
+  retention_in_days                = 90
+  daily_quota_gb                   = "-1"
+  internet_ingestion_enabled       = true
+  internet_query_enabled           = true
+  resource_group_name              = module.resource_group.resource_group_name
+  log_analytics_workspace_location = module.resource_group.resource_group_location
+  log_analytics_workspace_id       = module.log-analytics.workspace_id
+}
+
+##----------------------------------------------------------------------------- 
 ## VPN module call. 
 ## Following module will deploy point to site vpn with ssl certificate in azure infratsructure.  
 ##-----------------------------------------------------------------------------
@@ -76,7 +95,7 @@ module "vpn" {
   subnet_id            = module.subnet.specific_subnet_id[0]
   #### enable diagnostic setting
   diagnostic_setting_enable  = false
-  log_analytics_workspace_id = ""
+  log_analytics_workspace_id = module.log-analytics.workspace_id
   vpn_client_configuration_c = {
     address_space        = "172.16.201.0/24"
     vpn_client_protocols = ["OpenVPN", "IkeV2"]

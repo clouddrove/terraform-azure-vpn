@@ -8,7 +8,7 @@ repos:
       - id: tflint
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform.git
-    rev: v4.0.1 # Use the ref you want to point at
+    rev: v1.96.1 # Use the ref you want to point at
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace

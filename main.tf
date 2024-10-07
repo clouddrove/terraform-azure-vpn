@@ -12,7 +12,7 @@ module "labels" {
 }
 
 ##-----------------------------------------------------------------------------
-## data block called for resource group. 
+## data block called for resource group.
 ##-----------------------------------------------------------------------------
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
@@ -20,7 +20,7 @@ data "azurerm_resource_group" "rg" {
 
 ##-----------------------------------------------------------------------------
 ## Random string called
-## Will be used further in public ip resource in domain name label. 
+## Will be used further in public ip resource in domain name label.
 ##-----------------------------------------------------------------------------
 resource "random_string" "str" {
   count   = var.enable ? 1 : 0
@@ -100,7 +100,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
 
 ##-----------------------------------------------------------------------------
 ## Virtual Network Gateway
-## Following resource will deploy virtual network gateway with certificate. 
+## Following resource will deploy virtual network gateway with certificate.
 ##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw2" {
   count               = var.enable && var.vpn_with_certificate ? 1 : 0
@@ -202,7 +202,7 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for virtual network gateway. 
+## Following resource will deploy diagnostic setting for virtual network gateway.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "main" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
@@ -246,7 +246,7 @@ resource "azurerm_monitor_diagnostic_setting" "main" {
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for public ip. 
+## Following resource will deploy diagnostic setting for public ip.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0

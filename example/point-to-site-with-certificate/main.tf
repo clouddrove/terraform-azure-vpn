@@ -8,7 +8,7 @@ locals {
   environment = "test"
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Resource Group module call
 ## Resource group in which all resources will be deployed.
 ##-----------------------------------------------------------------------------
@@ -21,9 +21,9 @@ module "resource_group" {
   location    = "Canada Central"
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Virtual Network module call.
-## Virtual Network in which vpn subnet(Gateway Subnet) will be created. 
+## Virtual Network in which vpn subnet(Gateway Subnet) will be created.
 ##-----------------------------------------------------------------------------
 module "vnet" {
   source              = "clouddrove/vnet/azure"
@@ -35,9 +35,9 @@ module "vnet" {
   address_space       = "10.0.0.0/16"
 }
 
-##----------------------------------------------------------------------------- 
-## Subnet module call. 
-## Name specific subnet for vpn will be created. 
+##-----------------------------------------------------------------------------
+## Subnet module call.
+## Name specific subnet for vpn will be created.
 ##-----------------------------------------------------------------------------
 module "subnet" {
   source               = "clouddrove/subnet/azure"
@@ -62,9 +62,9 @@ module "subnet" {
   ]
 }
 
-##----------------------------------------------------------------------------- 
-## VPN module call. 
-## Following module will deploy point to site vpn with ssl certificate in azure infratsructure.  
+##-----------------------------------------------------------------------------
+## VPN module call.
+## Following module will deploy point to site vpn with ssl certificate in azure infratsructure.
 ##-----------------------------------------------------------------------------
 module "vpn" {
   source               = "../../"

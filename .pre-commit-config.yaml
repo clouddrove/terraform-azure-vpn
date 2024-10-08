@@ -3,9 +3,9 @@ repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.96.1  # Version of the pre-commit-terraform repository
     hooks:
-      - id: terraform-fmt
-      - id: terraform-docs
-      - id: tflint
+      - id: terraform_fmt
+      - id: terraform_docs
+      - id: terraform_tflint
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0  # Get the latest version from https://github.com/pre-commit/pre-commit-hooks/releases

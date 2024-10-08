@@ -10,7 +10,7 @@ jobs:
     secrets: inherit
     with:
       working_directory: './examples/site-to-site/'
-     
+
    complete-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     secrets: inherit

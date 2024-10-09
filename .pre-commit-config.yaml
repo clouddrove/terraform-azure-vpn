@@ -4,11 +4,8 @@ repos:
     rev: v1.96.1  # Version of the pre-commit-terraform repository
     hooks:
       - id: terraform_fmt
-        args: ["--tf-path=/usr/local/bin/terraform"]
       - id: terraform_docs
-        args: ["--docs-path=/usr/local/bin/terraform-docs"]
       - id: terraform_tflint
-        args: ["--config=./.tflint.hcl"]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0  # Get the latest version from https://github.com/pre-commit/pre-commit-hooks/releases

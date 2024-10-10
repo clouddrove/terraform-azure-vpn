@@ -537,6 +537,7 @@ MIT License - Copyright (c) 2021 The terraform-docs Authors.
 [here]: https://golang.org/doc/code.html#GOPATH
 [Homebrew]: https://brew.sh
 [install pre-commit]: https://pre-commit.com/#install
+[`terraform`]: https://www.terraform.io/downloads.html
 [`output`]: https://terraform-docs.io/user-guide/configuration/output/
 [releases]: https://github.com/terraform-docs/terraform-docs/releases
 [Scoop]: https://scoop.sh/

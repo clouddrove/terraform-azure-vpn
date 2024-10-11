@@ -10,14 +10,14 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "example/point-to-site-with-ad" # Location of package manifests
+    directory: "examples/complete" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "example/point-to-site-with-certificate" # Location of package manifests
+    directory: "examples/point-to-site-with-certificate" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "example/site-to-site" # Location of package manifests
+    directory: "examples/site-to-site" # Location of package manifests
     schedule:
       interval: "weekly"

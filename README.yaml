@@ -5,7 +5,7 @@
 #
 
 # Name of this project
-name : Terraform AZURE VPN
+name: Terraform AZURE VPN
 
 # License of this project
 license: "APACHE"
@@ -18,18 +18,36 @@ badges:
   - name: "Terraform"
     image: "https://img.shields.io/badge/Terraform-v1.1.7-green"
     url: "https://www.terraform.io"
+  - name: "tfsec"
+    image: "https://github.com/clouddrove/terraform-azure-vpn/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/clouddrove/terraform-azure-vpn/actions/workflows/tfsec.yml"
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
+  - name: "Changelog"
+    image: "https://img.shields.io/badge/Changelog-blue"
+    url: "CHANGELOG.md"
+
+# Prerequesties to display
+prerequesties:
+  - name: Terraform
+    url: https://learn.hashicorp.com/terraform/getting-started/install.html
+    version: ">= 1.0.0"
+
+providers:
+  - name: azure
+    url: https://azure.microsoft.com/
+    version: ">= 3.0.0"
+
+module_dependencies:
+  - name: Labels Module
+    url: https://github.com/clouddrove/terraform-azure-labels
+    description: Provides resource tagging.
 
 #  description of this project
 description: |-
   Terraform module to create vpn resource on AZURE.
-# extra content
-include:
-  - "terraform.md"
 
-# How to use this project
 # How to use this project
 usage: |-
   Here are some examples of how you can use this module in your inventory structure:
@@ -124,6 +142,3 @@ usage: |-
     ]
    }
    ```
-
-
-

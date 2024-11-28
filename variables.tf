@@ -18,14 +18,13 @@ variable "name" {
 
 variable "public_ip_allocation_method" {
   type        = string
-  default     = "Dynamic"
+  default     = "Static"
   description = "Defines the allocation method for this IP address. Possible values are Static or Dynamic. Defaults to Dynamic"
-
 }
 
 variable "public_ip_sku" {
   type        = string
-  default     = "Basic"
+  default     = "Standard"
   description = "The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic"
 }
 
@@ -33,7 +32,6 @@ variable "gateway_type" {
   type        = string
   default     = "Vpn"
   description = "The type of the Virtual Network Gateway. Valid options are Vpn or ExpressRoute"
-
 }
 
 variable "vpn_type" {
@@ -45,22 +43,20 @@ variable "vpn_type" {
 
 variable "vpn_gw_sku" {
   type        = string
-  default     = "VpnGw3"
+  default     = "VpnGw1"
   description = "Configuration of the size and capacity of the virtual network gateway. Valid options are Basic, VpnGw3, VpnGw2, VpnGw3, VpnGw4,VpnGw5, VpnGw3AZ, VpnGw3, VpnGw3AZ,VpnGw4AZ and VpnGw5AZ and depend on the type, vpn_type and generation arguments"
 }
 
 variable "vpn_gw_generation" {
   type        = string
-  default     = "Generation2"
+  default     = "Generation1"
   description = "The Generation of the Virtual Network gateway. Possible values include Generation1, Generation2 or None"
-
 }
 
 variable "enable_active_active" {
   type        = bool
   default     = false
   description = "If true, an active-active Virtual Network Gateway will be created. An active-active gateway requires a HighPerformance or an UltraPerformance sku. If false, an active-standby gateway will be created. Defaults to false."
-
 }
 
 variable "enable_bgp" {
@@ -125,7 +121,7 @@ variable "gateway_connection_protocol" {
 
 variable "sku" {
   type        = string
-  default     = "VpnGw3"
+  default     = "VpnGw1"
   description = "Configuration of the size and capacity of the virtual network gateway"
 }
 

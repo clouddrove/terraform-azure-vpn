@@ -4,7 +4,7 @@ provider "azurerm" {
 }
 
 locals {
-  name        = "app"
+  name        = "app-vpnd"
   environment = "test"
 }
 

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2024-11-28
+### :bug: Bug Fixes
+- [`8901b31`](https://github.com/clouddrove/terraform-azure-vpn/commit/8901b313276f2c53adc257885498bd19b427c419) - remove deprecations *(PR [#30](https://github.com/clouddrove/terraform-azure-vpn/pull/30) by [@vjdbj](https://github.com/vjdbj))*
+
+### :memo: Documentation Changes
+- [`1b20bce`](https://github.com/clouddrove/terraform-azure-vpn/commit/1b20bcec5bbe59cda3413538150548ed11473651) - update CHANGELOG.md for 1.0.2 *(commit by [@clouddrove-ci](https://github.com/clouddrove-ci))*
+
+
 ## [1.0.2] - 2023-07-03
 ### :bug: Bug Fixes
 - [`a253794`](https://github.com/clouddrove/terraform-azure-vpn/commit/a253794bb4f80f1394c3db700b55b412bab71e0c) - default variable pass in variable.tf *(commit by [@themaheshyadav](https://github.com/themaheshyadav))*
@@ -28,3 +36,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.1]: https://github.com/clouddrove/terraform-azure-vpn/compare/1.0.0...1.0.1
 
 [1.0.2]: https://github.com/clouddrove/terraform-azure-vpn/compare/1.0.1...1.0.2
+[2.0.0]: https://github.com/clouddrove/terraform-azure-vpn/compare/1.0.2...2.0.0

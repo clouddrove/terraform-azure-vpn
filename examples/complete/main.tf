@@ -1,14 +1,14 @@
 provider "azurerm" {
   features {}
-  subscription_id = ""
+  subscription_id = "000000-11111-1223-XXX-XXXXXXXXXXXX"
 }
 
 locals {
-  name        = "app"
+  name        = "app-vpnd"
   environment = "test"
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Resource Group module call
 ## Resource group in which all resources will be deployed.
 ##-----------------------------------------------------------------------------
@@ -21,9 +21,9 @@ module "resource_group" {
   location    = "Canada Central"
 }
 
-##----------------------------------------------------------------------------- 
+##-----------------------------------------------------------------------------
 ## Virtual Network module call.
-## Virtual Network in which vpn subnet(Gateway Subnet) will be created. 
+## Virtual Network in which vpn subnet(Gateway Subnet) will be created.
 ##-----------------------------------------------------------------------------
 module "vnet" {
   source              = "clouddrove/vnet/azure"
@@ -35,13 +35,13 @@ module "vnet" {
   address_space       = "10.0.0.0/16"
 }
 
-##----------------------------------------------------------------------------- 
-## Subnet module call. 
-## Name specific subnet for vpn will be created. 
+##-----------------------------------------------------------------------------
+## Subnet module call.
+## Name specific subnet for vpn will be created.
 ##-----------------------------------------------------------------------------
 module "subnet" {
   source               = "clouddrove/subnet/azure"
-  version              = "1.0.2"
+  version              = "1.2.1"
   name                 = local.name
   environment          = local.environment
   resource_group_name  = module.resource_group.resource_group_name
@@ -49,7 +49,7 @@ module "subnet" {
   virtual_network_name = join("", module.vnet.vnet_name)
   #subnet
   specific_name_subnet  = true
-  specific_subnet_names = "GatewaySubnet"
+  specific_subnet_names = ["GatewaySubnet"]
   subnet_prefixes       = ["10.0.1.0/24"]
   # route_table
   enable_route_table = false
@@ -62,9 +62,28 @@ module "subnet" {
   ]
 }
 
-##----------------------------------------------------------------------------- 
-## VPN module call. 
-## Following module will deploy point to site vpn in azure infratsructure.  
+##-----------------------------------------------------------------------------
+## Log Analytics module call.
+##-----------------------------------------------------------------------------
+module "log-analytics" {
+  source                           = "clouddrove/log-analytics/azure"
+  version                          = "1.1.0"
+  name                             = local.name
+  environment                      = local.environment
+  create_log_analytics_workspace   = true
+  log_analytics_workspace_sku      = "PerGB2018"
+  retention_in_days                = 90
+  daily_quota_gb                   = "-1"
+  internet_ingestion_enabled       = true
+  internet_query_enabled           = true
+  resource_group_name              = module.resource_group.resource_group_name
+  log_analytics_workspace_location = module.resource_group.resource_group_location
+  log_analytics_workspace_id       = module.log-analytics.workspace_id
+}
+
+##-----------------------------------------------------------------------------
+## VPN module call.
+## Following module will deploy point to site vpn in azure infratsructure.
 ##-----------------------------------------------------------------------------
 module "vpn" {
   depends_on          = [module.vnet]
@@ -84,5 +103,5 @@ module "vpn" {
   }
   #### enable diagnostic setting
   diagnostic_setting_enable  = false
-  log_analytics_workspace_id = ""
+  log_analytics_workspace_id = module.log-analytics.workspace_id
 }

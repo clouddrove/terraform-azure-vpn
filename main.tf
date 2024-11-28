@@ -12,7 +12,7 @@ module "labels" {
 }
 
 ##-----------------------------------------------------------------------------
-## data block called for resource group. 
+## data block called for resource group.
 ##-----------------------------------------------------------------------------
 data "azurerm_resource_group" "rg" {
   name = var.resource_group_name
@@ -20,7 +20,7 @@ data "azurerm_resource_group" "rg" {
 
 ##-----------------------------------------------------------------------------
 ## Random string called
-## Will be used further in public ip resource in domain name label. 
+## Will be used further in public ip resource in domain name label.
 ##-----------------------------------------------------------------------------
 resource "random_string" "str" {
   count   = var.enable ? 1 : 0
@@ -100,7 +100,7 @@ resource "azurerm_virtual_network_gateway" "vpngw" {
 
 ##-----------------------------------------------------------------------------
 ## Virtual Network Gateway
-## Following resource will deploy virtual network gateway with certificate. 
+## Following resource will deploy virtual network gateway with certificate.
 ##-----------------------------------------------------------------------------
 resource "azurerm_virtual_network_gateway" "vpngw2" {
   count               = var.enable && var.vpn_with_certificate ? 1 : 0
@@ -178,7 +178,7 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
   resource_group_name             = data.azurerm_resource_group.rg.name
   location                        = data.azurerm_resource_group.rg.location
   type                            = var.gateway_connection_type
-  virtual_network_gateway_id      = var.sts_vpn == true ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  virtual_network_gateway_id      = var.sts_vpn == true ? azurerm_virtual_network_gateway.vpngw[0].id : azurerm_virtual_network_gateway.vpngw2[0].id
   local_network_gateway_id        = var.gateway_connection_type != "ExpressRoute" ? azurerm_local_network_gateway.localgw[count.index].id : null
   express_route_circuit_id        = var.gateway_connection_type == "ExpressRoute" ? var.express_route_circuit_id : null
   peer_virtual_network_gateway_id = var.gateway_connection_type == "Vnet2Vnet" ? var.peer_virtual_network_gateway_id : null
@@ -202,43 +202,30 @@ resource "azurerm_virtual_network_gateway_connection" "az-hub-onprem" {
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for virtual network gateway. 
+## Following resource will deploy diagnostic setting for virtual network gateway.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "main" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-vpn-gateway-diagnostic-log", module.labels.id)
-  target_resource_id             = var.vpn_ad || var.sts_vpn ? join("", azurerm_virtual_network_gateway.vpngw.*.id) : join("", azurerm_virtual_network_gateway.vpngw2.*.id)
+  target_resource_id             = var.vpn_ad || var.sts_vpn ? azurerm_virtual_network_gateway.vpngw[0].id : azurerm_virtual_network_gateway.vpngw2[0].id
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "enabled_log" {
+    for_each = var.log_category
+    content {
+      category = enabled_log.value
     }
-  }
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
   }
 
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "metric" {
+    for_each = var.metric_enabled ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
-    enabled = var.log_enabled
   }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
@@ -246,43 +233,30 @@ resource "azurerm_monitor_diagnostic_setting" "main" {
 }
 
 ##-----------------------------------------------------------------------------
-## Following resource will deploy diagnostic setting for public ip. 
+## Following resource will deploy diagnostic setting for public ip.
 ##-----------------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "pip_gw" {
   count                          = var.enable && var.diagnostic_setting_enable ? 1 : 0
   name                           = format("%s-gw-pip-diagnostic-log", module.labels.id)
-  target_resource_id             = join("", azurerm_public_ip.pip_gw.*.id)
+  target_resource_id             = azurerm_public_ip.pip_gw[0].id
   storage_account_id             = var.storage_account_id
   eventhub_name                  = var.eventhub_name
   eventhub_authorization_rule_id = var.eventhub_authorization_rule_id
   log_analytics_workspace_id     = var.log_analytics_workspace_id
   log_analytics_destination_type = var.log_analytics_destination_type
-  metric {
-    category = "AllMetrics"
-    enabled  = var.Metric_enable
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "enabled_log" {
+    for_each = var.log_category
+    content {
+      category = enabled_log.value
     }
-  }
-  log {
-    category       = var.category
-    category_group = "AllLogs"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
-    }
-    enabled = var.log_enabled
   }
 
-  log {
-    category       = var.category
-    category_group = "Audit"
-    retention_policy {
-      enabled = var.retention_policy_enabled
-      days    = var.days
+  dynamic "metric" {
+    for_each = var.metric_enabled ? ["AllMetrics"] : []
+    content {
+      category = metric.value
+      enabled  = true
     }
-    enabled = var.log_enabled
   }
   lifecycle {
     ignore_changes = [log_analytics_destination_type]
